@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# Wrap docker and vagrant in order to easily use docker on non linux operating systems.
+#
+# Copyright 2013 Julien Duponchelle
+# 
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+# file except in compliance with the License. You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+
+export VAGRANT_CWD="$HOME/.docker"
+export DOCKER_VERSION=0.4.8
+export FORWARD_DOCKER_PORTS="yes"
+
+# INSTALL DEPENDENCIES
+
+vagrant > /dev/null 2>&1
+if [ $? = 127 ]
+then
+  echo "Error: you need to install vagrant before"
+  echo "You can download it at http://www.vagrantup.com/"
+  exit 1
+fi
+
+if [ ! -d "$VAGRANT_CWD" ]
+then
+  mkdir "$VAGRANT_CWD"
+fi
+
+if [ ! -f "$VAGRANT_CWD/Vagrantfile" ]
+then
+  echo "Installing docker vagrant file"  
+  curl "https://raw.github.com/dotcloud/docker/v${DOCKER_VERSION}/Vagrantfile" > "$VAGRANT_CWD/Vagrantfile"
+fi
+
+if [ ! -f "$VAGRANT_CWD/docker.conf" ]
+then
+  #This configuration file allow connections from outside
+  cat > "$VAGRANT_CWD/docker.conf" <<EOL
+description     "Run docker"
+
+start on runlevel [2345]
+stop on starting rc RUNLEVEL=[016]
+respawn
+
+script
+    /usr/bin/docker -d -H=tcp://0.0.0.0:4243
+end script
+EOL
+fi
+
+if [ ! -f "$VAGRANT_CWD/docker" ]
+then
+  echo "Installing docker command"
+  go > /dev/null 2>&1  
+  if [ $? = 127 ]
+  then
+    echo "Error: you need to install go before"
+    echo "You can install it with brew install go"
+    exit 1
+  fi
+  if [ ! -d "$VAGRANT_CWD/src" ]
+  then
+    git clone https://github.com/dotcloud/docker.git "$VAGRANT_CWD/src"
+  fi
+  cd "$VAGRANT_CWD/src"
+  git checkout "v${DOCKER_VERSION}"
+  make
+  mv bin/docker "$VAGRANT_CWD/docker"
+fi
+
+# START VIRTUALMACHINE
+
+vagrant status | grep running > /dev/null 2>&1
+if [ $? = 1 ]
+then
+  vagrant up
+  echo "Install docker configuration"
+  vagrant ssh -c "echo VM is ready" #In order to be sure that ssh is available before using scp
+  SCP_OPTIONS=`vagrant ssh-config | awk -v ORS=' ' '{print "-o " $1 "=" $2}'`
+  scp $SCP_OPTIONS "$VAGRANT_CWD/docker.conf" default:/tmp/docker.conf
+  vagrant ssh -c "sudo bash -c 'mv /tmp/docker.conf /etc/init/docker.conf'"
+
+  echo "Restart docker"
+  vagrant halt
+  vagrant up
+fi
+
+
+case "$1" in
+  ssh)
+    vagrant ssh
+    ;;
+  halt)
+    vagrant halt
+    ;;
+  help)
+    "$VAGRANT_CWD/docker" help
+    echo "Docker.sh additional commands:"
+    echo "    halt      Halt docker daemon and virtual machine"    
+    echo "    ssh       Open SSH console on vagrant box"
+    echo ""
+    ;;
+  *)
+    "$VAGRANT_CWD/docker" $*
+esac
+
