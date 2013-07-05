@@ -88,6 +88,7 @@ then
   vagrant ssh -c "sudo bash -c 'mv /tmp/docker.conf /etc/init/docker.conf'"
 
   echo "Restart docker"
+  #TODO: The restart should be more intelligent. Restart the VM work perfectly but it's slow
   vagrant halt
   vagrant up
 fi
