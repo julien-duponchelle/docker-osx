@@ -109,5 +109,6 @@ case "$1" in
     ;;
   *)
     "$VAGRANT_CWD/docker" $*
+    exit $?
 esac
 
