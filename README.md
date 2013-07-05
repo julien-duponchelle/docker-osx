@@ -5,6 +5,13 @@ This script allow you to install and use docker on MacOS X.
 The target is to allow users to forgot they are running docker
 inside a Virtual Machine.
 
+The results is you can run command like:
+```
+docker pull ubuntu:12.10
+docker images
+```
+Directly from the MacOS terminal without ssh on the docker Vagrant box.
+
 
 In details the script:
 * setup the docker Virtual Machine
