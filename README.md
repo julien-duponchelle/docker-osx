@@ -17,7 +17,7 @@ In details the script:
 * setup the docker Virtual Machine
 * enable access to docker network from the MacOS host
 * compile docker for MacOS
-* launch the docker VM if docker is not running
+* launch the docker VM if docker is not running when you use the docker command in your MacOS terminal
 
 # Installation
 
