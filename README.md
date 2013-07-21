@@ -30,6 +30,21 @@ chmod 700 /usr/local/bin/docker
 docker version
 ```
 
+# Additional commands
+
+## ssh
+
+Open an ssh console on docker virtual machine
+
+## halt
+
+Stop docker daemon (by stopping the docker virtual machine)
+
+## upgrade
+
+Upgrade the docker version
+
+
 # Licence
 Copyright 2013 Julien Duponchelle
 

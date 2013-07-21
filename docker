@@ -15,8 +15,23 @@
 # and limitations under the License.
 
 export VAGRANT_CWD="$HOME/.docker"
-export DOCKER_VERSION=0.4.8
+export DOCKER_VERSION=0.5.0
 export FORWARD_DOCKER_PORTS="yes"
+
+function upgrade_docker {
+  echo "Upgrade to docker $DOCKER_VERSION"
+  compile_and_install_docker
+  vagrant ssh -c "DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get upgrade -q -y"
+}
+
+function compile_and_install_docker {
+  cd "$VAGRANT_CWD/src"
+  git checkout master
+  git pull
+  git checkout "v${DOCKER_VERSION}"
+  make
+  mv bin/docker "$VAGRANT_CWD/docker"
+}
 
 # INSTALL DEPENDENCIES
 
@@ -69,10 +84,7 @@ then
   then
     git clone https://github.com/dotcloud/docker.git "$VAGRANT_CWD/src"
   fi
-  cd "$VAGRANT_CWD/src"
-  git checkout "v${DOCKER_VERSION}"
-  make
-  mv bin/docker "$VAGRANT_CWD/docker"
+  compile_and_install_docker
 fi
 
 # START VIRTUALMACHINE
@@ -101,9 +113,13 @@ case "$1" in
   halt)
     vagrant halt
     ;;
+  upgrade)
+    upgrade_docker
+    ;;
   help)
     "$VAGRANT_CWD/docker" help
     echo "Docker.sh additional commands:"
+    echo "    upgrade   Upgrade docker version"        
     echo "    halt      Halt docker daemon and virtual machine"    
     echo "    ssh       Open SSH console on vagrant box"
     echo ""
