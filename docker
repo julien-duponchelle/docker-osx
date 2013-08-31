@@ -15,9 +15,11 @@
 # and limitations under the License.
 
 export VAGRANT_CWD="$HOME/.docker"
-export DOCKER_VERSION=0.6.1
 export FORWARD_DOCKER_PORTS="yes"
 export GOPATH="$HOME/.docker/go/"
+
+DOCKER_VERSION=0.6.1
+DOCKER_CMD="$VAGRANT_CWD/go/bin/docker -H=tcp://127.0.0.1:4243"
 
 function upgrade_docker {
   echo "Upgrade to docker $DOCKER_VERSION"
@@ -119,15 +121,15 @@ case "$1" in
     upgrade_docker
     ;;
   help)
-    "$VAGRANT_CWD/docker" help
+    "$DOCKER_CMD" help
     echo "Docker.sh additional commands:"
     echo "    upgrade   Upgrade docker version"        
-    echo "    halt      Halt docker daemon and virtual machine"    
+    echo "    halt      Halt docker daemon and virtual machine"
     echo "    ssh       Open SSH console on vagrant box"
     echo ""
     ;;
   *)
-    "$VAGRANT_CWD/go/bin/docker" -H=tcp://127.0.0.1:4243 $*
+    $DOCKER_CMD $*
     exit $?
 esac
 
