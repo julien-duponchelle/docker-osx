@@ -36,7 +36,24 @@ function compile_and_install_docker {
   go install -v github.com/dotcloud/docker/...
 }
 
+function install_dep {
+  $1 > /dev/null 2>&1  
+  if [ $? = 127 ]
+  then
+    $1 > /dev/null 2>&1  
+    if [ $? = 127 ]
+    then
+      brew install $1
+    else
+      echo "Error: you need to install $1 before"
+      echo "You can install it with brew install $1"
+      exit 1
+    fi
+  fi
+}
+
 # INSTALL DEPENDENCIES
+
 
 vagrant > /dev/null 2>&1
 if [ $? = 127 ]
@@ -77,13 +94,9 @@ fi
 if [ ! -f "$VAGRANT_CWD/go/bin/docker" ]
 then
   echo "Installing docker command"
-  go > /dev/null 2>&1  
-  if [ $? = 127 ]
-  then
-    echo "Error: you need to install go before"
-    echo "You can install it with brew install go"
-    exit 1
-  fi
+  install_dep go
+  install_dep git
+  install_dep hg
   if [ ! -d "$VAGRANT_CWD/src" ]
   then
     git clone https://github.com/dotcloud/docker.git "$VAGRANT_CWD/src"
