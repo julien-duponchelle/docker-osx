@@ -18,8 +18,8 @@ export VAGRANT_CWD="$HOME/.docker"
 export FORWARD_DOCKER_PORTS="yes"
 export GOPATH="$HOME/.docker/go/"
 
-DOCKER_VERSION=0.6.1
-DOCKER_CMD="$VAGRANT_CWD/go/bin/docker -H=tcp://127.0.0.1:4243"
+DOCKER_VERSION=0.7.0
+DOCKER_CMD="$VAGRANT_CWD/go/bin/docker -H=tcp://127.0.0.1:49000"
 
 function upgrade_docker {
   echo "Upgrade to docker $DOCKER_VERSION"
@@ -43,7 +43,7 @@ function install_dep {
     $1 > /dev/null 2>&1  
     if [ $? = 127 ]
     then
-      brew install $1
+      brew install $2 $1
     else
       echo "Error: you need to install $1 before"
       echo "You can install it with brew install $1"
@@ -71,8 +71,7 @@ fi
 if [ ! -f "$VAGRANT_CWD/Vagrantfile" ]
 then
   echo "Installing docker vagrant file"
-  curl "https://raw.github.com/dotcloud/docker/6c206f7d7835310c39ef20d3375e949b1fbfd7b9/Vagrantfile" > "$VAGRANT_CWD/Vagrantfile"  
-  #curl "https://raw.github.com/dotcloud/docker/v${DOCKER_VERSION}/Vagrantfile" > "$VAGRANT_CWD/Vagrantfile"
+  curl "https://raw.github.com/dotcloud/docker/v${DOCKER_VERSION}/Vagrantfile" > "$VAGRANT_CWD/Vagrantfile"
 fi
 
 if [ ! -f "$VAGRANT_CWD/docker.conf" ]
@@ -86,7 +85,7 @@ stop on starting rc RUNLEVEL=[016]
 respawn
 
 script
-    /usr/bin/docker -d -H=tcp://0.0.0.0:4243
+    /usr/bin/docker -d -H=tcp://0.0.0.0:49000
 end script
 EOL
 fi
