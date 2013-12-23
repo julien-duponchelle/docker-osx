@@ -16,41 +16,18 @@
 
 export VAGRANT_CWD="$HOME/.docker"
 export FORWARD_DOCKER_PORTS="yes"
-export GOPATH="$HOME/.docker/go/"
 
-DOCKER_VERSION=0.7.0
-DOCKER_CMD="$VAGRANT_CWD/go/bin/docker -H=tcp://127.0.0.1:49000"
+export DOCKER_VERSION="0.7.2"
+export DOCKER_CLIENT_URL="https://s3.amazonaws.com/bfirsh/docker-binaries/docker-darwin-amd64-0.7.2-dev"
+
+DOCKER_BIN="$VAGRANT_CWD/bin/docker"
+DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:49000"
 
 function upgrade_docker {
   echo "Upgrade to docker $DOCKER_VERSION"
-  compile_and_install_docker
   vagrant ssh -c "DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get dist-upgrade -q -y"
 }
 
-function compile_and_install_docker {
-  cd "$VAGRANT_CWD/src"
-  git checkout master
-  git pull
-  git checkout "v${DOCKER_VERSION}"
-  go get -v github.com/dotcloud/docker/...
-  go install -v github.com/dotcloud/docker/...
-}
-
-function install_dep {
-  $1 > /dev/null 2>&1  
-  if [ $? = 127 ]
-  then
-    $1 > /dev/null 2>&1  
-    if [ $? = 127 ]
-    then
-      brew install $2 $1
-    else
-      echo "Error: you need to install $1 before"
-      echo "You can install it with brew install $1"
-      exit 1
-    fi
-  fi
-}
 
 # INSTALL DEPENDENCIES
 
@@ -90,17 +67,13 @@ end script
 EOL
 fi
 
-if [ ! -f "$VAGRANT_CWD/go/bin/docker" ]
+if [ ! -f "$DOCKER_BIN" ]
 then
-  echo "Installing docker command"
-  install_dep go
-  install_dep git
-  install_dep hg
-  if [ ! -d "$VAGRANT_CWD/src" ]
-  then
-    git clone https://github.com/dotcloud/docker.git "$VAGRANT_CWD/src"
-  fi
-  compile_and_install_docker
+  echo "Installing Docker $DOCKER_VERSION client..."
+  mkdir -p "$VAGRANT_CWD/bin"
+  curl "$DOCKER_CLIENT_URL" > /tmp/docker-osx-client
+  mv /tmp/docker-osx-client "$DOCKER_BIN"
+  chmod +x "$DOCKER_BIN"
 fi
 
 # START VIRTUALMACHINE
