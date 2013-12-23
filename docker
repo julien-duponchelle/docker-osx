@@ -94,6 +94,14 @@ then
   vagrant up
 fi
 
+function help() {
+  $DOCKER_CMD help
+  echo "Docker.sh additional commands:"
+  echo "    upgrade   Upgrade docker version"        
+  echo "    halt      Halt docker daemon and virtual machine"
+  echo "    ssh       Open SSH console on vagrant box"
+  echo ""
+}
 
 case "$1" in
   ssh)
@@ -106,12 +114,10 @@ case "$1" in
     upgrade_docker
     ;;
   help)
-    "$DOCKER_CMD" help
-    echo "Docker.sh additional commands:"
-    echo "    upgrade   Upgrade docker version"        
-    echo "    halt      Halt docker daemon and virtual machine"
-    echo "    ssh       Open SSH console on vagrant box"
-    echo ""
+    help
+    ;;
+  "")
+    help
     ;;
   *)
     $DOCKER_CMD $*
