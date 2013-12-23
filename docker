@@ -14,6 +14,8 @@
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
 
+set -e
+
 export VAGRANT_CWD="$HOME/.docker"
 export FORWARD_DOCKER_PORTS="yes"
 
@@ -27,9 +29,7 @@ DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:4243"
 
 # INSTALL DEPENDENCIES
 
-
-vagrant > /dev/null 2>&1
-if [ $? = 127 ]
+if ! hash vagrant 2>/dev/null
 then
   echo "Error: you need to install vagrant before"
   echo "You can download it at http://www.vagrantup.com/"
@@ -69,8 +69,7 @@ fi
 
 # START VIRTUALMACHINE
 
-vagrant status | grep running > /dev/null 2>&1
-if [ $? = 1 ]
+if ! vagrant status | grep -q running
 then
   vagrant up
   vagrant ssh -c "sudo stop docker; sudo start docker"
