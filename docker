@@ -19,14 +19,10 @@ export FORWARD_DOCKER_PORTS="yes"
 
 export DOCKER_VERSION="0.7.2"
 export DOCKER_CLIENT_URL="https://s3.amazonaws.com/bfirsh/docker-binaries/docker-darwin-amd64-0.7.2-dev"
+export VAGRANT_BOX_URL="https://s3.amazonaws.com/bfirsh/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
 DOCKER_BIN="$VAGRANT_CWD/bin/docker"
-DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:49000"
-
-function upgrade_docker {
-  echo "Upgrade to docker $DOCKER_VERSION"
-  vagrant ssh -c "DEBIAN_FRONTEND=noninteractive sudo apt-get update && sudo apt-get dist-upgrade -q -y"
-}
+DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:4243"
 
 
 # INSTALL DEPENDENCIES
@@ -45,27 +41,22 @@ then
   mkdir "$VAGRANT_CWD"
 fi
 
-if [ ! -f "$VAGRANT_CWD/Vagrantfile" ]
-then
-  echo "Installing docker vagrant file"
-  curl "https://raw.github.com/dotcloud/docker/v${DOCKER_VERSION}/Vagrantfile" > "$VAGRANT_CWD/Vagrantfile"
-fi
+cat > "$VAGRANT_CWD/Vagrantfile" <<EOL
+Vagrant.configure("2") do |config|
+  config.vm.box = "docker-0.7.2"
+  config.vm.box_url = "$VAGRANT_BOX_URL"
 
-if [ ! -f "$VAGRANT_CWD/docker.conf" ]
-then
-  #This configuration file allow connections from outside
-  cat > "$VAGRANT_CWD/docker.conf" <<EOL
-description     "Run docker"
+  config.ssh.forward_agent = true
+  config.vm.network :forwarded_port, guest: 4243, host: 4243
+  config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243\"' >> /etc/default/docker"
 
-start on runlevel [2345]
-stop on starting rc RUNLEVEL=[016]
-respawn
-
-script
-    /usr/bin/docker -d -H=tcp://0.0.0.0:49000
-end script
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ['modifyvm', :id, '--memory', ENV['VM_MEMORY'] || 1024]
+    vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+    vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
+  end
+end
 EOL
-fi
 
 if [ ! -f "$DOCKER_BIN" ]
 then
@@ -82,22 +73,12 @@ vagrant status | grep running > /dev/null 2>&1
 if [ $? = 1 ]
 then
   vagrant up
-  echo "Install docker configuration"
-  vagrant ssh -c "echo VM is ready" #In order to be sure that ssh is available before using scp
-  SCP_OPTIONS=`vagrant ssh-config | awk -v ORS=' ' '{print "-o " $1 "=" $2}'`
-  scp $SCP_OPTIONS "$VAGRANT_CWD/docker.conf" default:/tmp/docker.conf
-  vagrant ssh -c "sudo bash -c 'mv /tmp/docker.conf /etc/init/docker.conf'"
-
-  echo "Restart docker"
-  #TODO: The restart should be more intelligent. Restart the VM work perfectly but it's slow
-  vagrant halt
-  vagrant up
+  vagrant ssh -c "sudo stop docker; sudo start docker"
 fi
 
 function help() {
   $DOCKER_CMD help
   echo "Docker.sh additional commands:"
-  echo "    upgrade   Upgrade docker version"        
   echo "    halt      Halt docker daemon and virtual machine"
   echo "    ssh       Open SSH console on vagrant box"
   echo ""
@@ -109,9 +90,6 @@ case "$1" in
     ;;
   halt)
     vagrant halt
-    ;;
-  upgrade)
-    upgrade_docker
     ;;
   help)
     help
