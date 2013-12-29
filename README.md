@@ -1,51 +1,36 @@
 docker-osx
 ==========
 
-This script allow you to install and use docker on MacOS X.
-The target is to allow users to forgot they are running docker
-inside a Virtual Machine.
+Docker on OS X in three steps:
 
-The results is you can run command like:
-```
-docker pull ubuntu:12.10
-docker images
-```
-Directly from the MacOS terminal without ssh on the docker Vagrant box.
+1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads.html).
 
+2. Put the `docker` script somewhere on your path:
 
-In details the script:
-* setup the docker Virtual Machine
-* enable access to docker network from the MacOS host
-* compile docker for MacOS
-* launch the docker VM if docker is not running when you use the docker command in your MacOS terminal
+        curl https://raw.github.com/bfirsh/docker-osx/master/docker > /usr/local/bin/docker
+        chmod +x /usr/local/bin/docker
 
-# Installation
+3. Run:
 
-You need to install Vagrant and VirtualBox before. 
+        docker version
 
-```
-curl https://raw.github.com/noplay/docker-osx/master/docker > /usr/local/bin/docker
-chmod 700 /usr/local/bin/docker
+This script acts as both an installer and a Docker binary. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then passes through all invocations of `docker` to the client which controls the daemon running on the virtual machine.
 
-docker version
-```
+## Additional commands
 
-# Additional commands
+Two extra commands have been added to `docker` as shortcuts for controlling the Vagrant VM:
 
-## ssh
+### docker halt
 
-Open an ssh console on docker virtual machine
+Stop the Vagrant VM. You'll probably want to do this after you've finished working with Docker project to save RAM.
 
-## halt
+### docker ssh
 
-Stop docker daemon (by stopping the docker virtual machine)
-
-## upgrade
-
-Upgrade the docker version
+Open a console on the Docker virtual machine.
 
 
-# Licence
+## Licence
+
 Copyright 2013 Julien Duponchelle
 
 Licensed under the Apache License, Version 2.0 (the "License");
