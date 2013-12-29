@@ -1,6 +1,10 @@
 #!/bin/bash
 #
-# Wrap docker and vagrant in order to easily use docker on non linux operating systems.
+# docker-osx
+# ==========
+#
+# Easy installation of Docker on OS X
+# https://github.com/noplay/docker-osx
 #
 # Copyright 2013 Julien Duponchelle
 # 
@@ -26,15 +30,14 @@ export VAGRANT_BOX_URL="https://s3.amazonaws.com/bfirsh/vagrant/vagrant-docker-0
 DOCKER_BIN="$VAGRANT_CWD/bin/docker"
 DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:4243"
 
-
+# Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
 if [ -f $VAGRANT_CWD/.docker-version ]
 then
   INSTALLED_DOCKER_VERSION=`cat $VAGRANT_CWD/.docker-version`
 fi
 
-# INSTALL DEPENDENCIES
-
+# Check that dependencies are installed
 if ! hash vagrant 2>/dev/null
 then
   echo "Error: you need to install vagrant before"
@@ -42,6 +45,7 @@ then
   exit 1
 fi
 
+# Set up Vagrant directory
 if [ ! -d "$VAGRANT_CWD" ]
 then
   mkdir "$VAGRANT_CWD"
@@ -75,8 +79,7 @@ then
   chmod +x "$DOCKER_BIN"
 fi
 
-# START VIRTUALMACHINE
-
+# Start virtual machine if it isn't running
 if ! vagrant status | grep -q running
 then
   vagrant up
