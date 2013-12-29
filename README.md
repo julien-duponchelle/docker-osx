@@ -7,7 +7,7 @@ Docker on OS X in three steps:
 
 2. Put the `docker` script somewhere on your path:
 
-        curl https://raw.github.com/bfirsh/docker-osx/master/docker > /usr/local/bin/docker
+        curl https://raw.github.com/noplay/docker-osx/master/docker > /usr/local/bin/docker
         chmod +x /usr/local/bin/docker
 
 3. Run:
