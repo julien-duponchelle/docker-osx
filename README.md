@@ -28,6 +28,9 @@ Stop the Vagrant VM. You'll probably want to do this after you've finished worki
 
 Open a console on the Docker virtual machine.
 
+## Contributors
+* [Julien Duponchelle](https://github.com/noplay/) original author
+* [Ben Firshman](https://github.com/bfirsh) Faster and simpler installation with Vagrant image and prebuild binary
 
 ## Licence
 
