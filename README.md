@@ -26,7 +26,7 @@ Stop the Vagrant VM. You'll probably want to do this after you've finished worki
 
 ### docker ssh
 
-Open a console on the Docker virtual machine.
+Open a console on the Vagrant virtual machine.
 
 ## Contributors
 * [Julien Duponchelle](https://github.com/noplay/) original author
