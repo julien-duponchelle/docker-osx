@@ -24,8 +24,8 @@ export VAGRANT_CWD="$HOME/.docker-osx"
 export FORWARD_DOCKER_PORTS="yes"
 
 export DOCKER_VERSION="0.7.2"
-export DOCKER_CLIENT_URL="https://s3.amazonaws.com/bfirsh/docker-binaries/docker-darwin-amd64-0.7.2-dev"
-export VAGRANT_BOX_URL="https://s3.amazonaws.com/bfirsh/vagrant/vagrant-docker-0.7.2-virtualbox.box"
+export DOCKER_CLIENT_URL="http://static.orchardup.com/binaries/docker/docker-darwin-amd64-0.7.2-dev"
+export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
 DOCKER_BIN="$VAGRANT_CWD/bin/docker"
 DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:4243"
