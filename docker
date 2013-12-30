@@ -83,7 +83,7 @@ fi
 # Start virtual machine if it isn't running
 if ! vagrant status | grep -q running
 then
-  if [ $1 == "halt" ]
+  if [[ $1 == "halt" ]]
   then
     echo "Docker is not running. Exiting"
     exit 0
