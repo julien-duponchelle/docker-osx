@@ -20,7 +20,7 @@
 
 set -e
 
-export VAGRANT_CWD="$HOME/.docker"
+export VAGRANT_CWD="$HOME/.docker-osx"
 export FORWARD_DOCKER_PORTS="yes"
 
 export DOCKER_VERSION="0.7.2"
