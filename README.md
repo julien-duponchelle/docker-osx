@@ -16,6 +16,8 @@ Docker on OS X in three steps:
 
 This script acts as both an installer and a Docker binary. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then passes through all invocations of `docker` to the client which controls the daemon running on the virtual machine.
 
+The virtual machine that Docker runs on is given the hostname `localdocker`. For example, if you run `docker run -p 8000:8000 ...`, then that will be available at `localdocker:8000` from OS X.
+
 ## Additional commands
 
 Two extra commands have been added to `docker` as shortcuts for controlling the Vagrant VM:
