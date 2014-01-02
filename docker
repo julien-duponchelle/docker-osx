@@ -58,8 +58,8 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "$VAGRANT_BOX_URL"
 
   config.ssh.forward_agent = true
-  config.vm.network :forwarded_port, :guest => 4243, :host => 4243
-
+  config.vm.network "forwarded_port", :guest => 4243, :host => 4243
+  config.vm.network "private_network", :ip => "172.16.42.43"
   config.vm.provision :shell, :inline => "apt-get update; apt-get install -y lxc-docker=$DOCKER_VERSION"
   config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243\"' >> /etc/default/docker"
   config.vm.synced_folder "$(echo ~)", "$(echo ~)", :create => true
@@ -74,6 +74,12 @@ Vagrant.configure("2") do |config|
   eval File.open(vagrantfile_extra).read if File.exists?(vagrantfile_extra)
 end
 EOL
+
+if ! grep -q localdocker /etc/hosts
+then
+  echo "Adding localdocker to /etc/hosts (may need your password for sudo)..."
+  sudo sh -c "echo '172.16.42.43 localdocker' >> /etc/hosts"
+fi
 
 # Download Docker client if it doesn't exist or needs updating
 if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
