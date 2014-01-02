@@ -24,13 +24,14 @@ export VAGRANT_CWD="$HOME/.docker-osx"
 
 export DOCKER_IP="172.16.42.43"
 export DOCKER_HOST="localdocker"
+export DOCKER_PORT="4243"
 
 export DOCKER_VERSION="0.7.2"
 export DOCKER_CLIENT_URL="http://static.orchardup.com/binaries/docker/docker-darwin-amd64-0.7.2-dev"
 export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
 DOCKER_BIN="$VAGRANT_CWD/bin/docker"
-DOCKER_CMD="$DOCKER_BIN -H=tcp://$DOCKER_IP:4243"
+DOCKER_CMD="$DOCKER_BIN -H=tcp://$DOCKER_IP:$DOCKER_PORT"
 
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
@@ -62,7 +63,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
   config.vm.network "private_network", :ip => "$DOCKER_IP"
   config.vm.provision :shell, :inline => "apt-get update; apt-get install -y lxc-docker=$DOCKER_VERSION"
-  config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243\"' >> /etc/default/docker"
+  config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:$DOCKER_PORT\"' >> /etc/default/docker"
   config.vm.synced_folder "$(echo ~)", "$(echo ~)", :create => true
 
   config.vm.provider :virtualbox do |vb|
