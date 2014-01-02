@@ -30,6 +30,35 @@ export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-doc
 DOCKER_BIN="$VAGRANT_CWD/bin/docker"
 DOCKER_CMD="$DOCKER_BIN -H=tcp://127.0.0.1:4243"
 
+##########
+function setup_etc_host {
+  if [ -f "$VAGRANT_CWD/.localdocker-host" ] && [ `cat "$VAGRANT_CWD/.localdocker-host"` = "0" ]
+  then
+    return
+  fi
+  if ! grep -q localdocker /etc/hosts
+  then
+    echo "Adding localdocker to /etc/hosts (may need your password for sudo)..."
+
+    echo "If you want you can add it manually by adding:"
+    echo "172.16.42.43 localdocker add the end of the /etc/hosts"
+    echo ""
+    echo "Or you can just ignore it and directly use the ip: 172.16.42.43"
+
+    read -p "Add the localdocker host to system configuration? [y/n] " -n 1 -r
+    echo    # move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+      sudo sh -c "echo '172.16.42.43 localdocker' >> /etc/hosts"  
+      echo -n 1 > "$VAGRANT_CWD/.localdocker-host" # We need to check the /etc/hosts at each launch    
+    else
+      echo -n 0 > "$VAGRANT_CWD/.localdocker-host" # We never check the /etc/hosts at launch          
+    fi
+  fi 
+}
+
+############
+
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
 if [ -f $VAGRANT_CWD/.docker-version ]
@@ -75,11 +104,9 @@ Vagrant.configure("2") do |config|
 end
 EOL
 
-if ! grep -q localdocker /etc/hosts
-then
-  echo "Adding localdocker to /etc/hosts (may need your password for sudo)..."
-  sudo sh -c "echo '172.16.42.43 localdocker' >> /etc/hosts"
-fi
+
+setup_etc_host
+
 
 # Download Docker client if it doesn't exist or needs updating
 if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
