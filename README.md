@@ -29,8 +29,9 @@ Stop the Vagrant VM. You'll probably want to do this after you've finished worki
 Open a console on the Vagrant virtual machine.
 
 ## Contributors
-* [Julien Duponchelle](https://github.com/noplay/) original author
-* [Ben Firshman](https://github.com/bfirsh) Faster and simpler installation with Vagrant image and prebuild binary
+
+* [Julien Duponchelle](https://github.com/noplay/) – Original author
+* [Ben Firshman](https://github.com/bfirsh) – Faster and simpler installation with Vagrant image and pre-built binary
 
 ## Licence
 
