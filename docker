@@ -21,7 +21,6 @@
 set -e
 
 export VAGRANT_CWD="$HOME/.docker-osx"
-export FORWARD_DOCKER_PORTS="yes"
 
 export DOCKER_VERSION="0.7.2"
 export DOCKER_CLIENT_URL="http://static.orchardup.com/binaries/docker/docker-darwin-amd64-0.7.2-dev"
