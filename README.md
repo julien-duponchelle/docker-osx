@@ -1,6 +1,12 @@
 docker-osx
 ==========
 
+# WARNING
+
+This an unofficial docker wrapper made to simplify docker usage on OSX. In a near futur docker (version 0.7.3) will provide official binary for client part.
+
+# What is docker-osx
+
 Docker on OS X in three steps:
 
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads.html).
