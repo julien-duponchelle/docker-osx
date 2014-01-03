@@ -28,6 +28,10 @@ The virtual machine that Docker runs on is given the hostname `localdocker`. For
 
 Two extra commands have been added to `docker` as shortcuts for controlling the Vagrant VM:
 
+### docker ping
+
+Ping the virtual machine
+
 ### docker halt
 
 Stop the Vagrant VM. You'll probably want to do this after you've finished working with Docker project to save RAM.

@@ -1,0 +1,160 @@
+#!/bin/bash
+#
+# docker-osx
+# ==========
+#
+# Easy installation of Docker on OS X
+# https://github.com/noplay/docker-osx
+#
+# Copyright 2013 Julien Duponchelle
+# 
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+# file except in compliance with the License. You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+
+set -e
+
+export CWD="$HOME/.docker-osx"
+
+export DOCKER_IP="172.16.42.43"
+export DOCKER_HOST="localdocker"
+export DOCKER_PORT="4243"
+
+export DOCKER_VERSION="0.7.2"
+export DOCKER_CLIENT_URL="http://static.orchardup.com/binaries/docker/docker-darwin-amd64-0.7.2-dev"
+export BOOT2DOCKER_URL="https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.iso"
+
+DOCKER_BIN="$CWD/bin/docker"
+DOCKER_CMD="$DOCKER_BIN -H=tcp://$DOCKER_IP:$DOCKER_PORT"
+BOOT2DOCKER_ISO="$CWD/boot2docker.iso"
+
+function download_iso() {
+    echo "Downloading boot2docker iso..."
+    curl -L "$BOOT2DOCKER_URL" > /tmp/boot2docker.iso
+    mv /tmp/boot2docker.iso "$BOOT2DOCKER_ISO"
+}
+
+function create_vm() {
+    VBoxManage createvm --name "boot2docker" --register --ostype "Linux_64"
+    
+    # Download Docker client if it doesn't exist or needs updating
+    if [[ ! -f "$BOOT2DOCKER_ISO" ]]
+    then
+        download_iso
+    fi
+    VBoxManage storagectl boot2docker --name IDE1 --add ide
+    VBoxManage storageattach boot2docker --storagectl "IDE1" --port 0 --device 1 --type dvddrive --medium "$BOOT2DOCKER_ISO"
+    VBoxManage modifyvm boot2docker --memory 1024
+    VBoxManage modifyvm boot2docker --natdnshostresolver1 on
+    VBoxManage modifyvm boot2docker --natdnsproxy1 on
+    HOSTINTERFACE=`VBoxManage list hostonlyifs|grep "^Name: "|tail -n1|awk -F' ' '{print $2}'`
+    echo "Configure network interface $HOSTINTERFACE"
+    VBoxManage hostonlyif ipconfig $HOSTINTERFACE --ip 172.16.42.1 
+    VBoxManage modifyvm boot2docker --hostonlyadapter1 $HOSTINTERFACE
+    VBoxManage modifyvm boot2docker --nic1 hostonly
+    VBoxManage dhcpserver add --ifname $HOSTINTERFACE --ip $DOCKER_IP --netmask 255.255.255.0 --lowerip $DOCKER_IP --upperip $DOCKER_IP --enable
+}
+
+function start_vm() {
+    # Start virtual machine if it isn't running
+    if ! VBoxManage list runningvms | grep boot2docker >/dev/null
+    then
+        if ! VBoxManage list vms | grep boot2docker >/dev/null
+        then
+            create_vm
+        fi
+        VBoxManage startvm boot2docker --type gui 
+    fi
+}
+
+function help() {
+  $DOCKER_CMD help
+  echo "Docker.sh additional commands:"
+  echo "    ping      Ping virtual machine"
+  echo "    halt      Halt docker daemon and virtual machine"
+  echo "    ssh       Open SSH console on vagrant box"
+  echo ""
+}
+
+# Determine currently installed version of Docker
+INSTALLED_DOCKER_VERSION=""
+if [ -f $CWD/.docker-version ]
+then
+  INSTALLED_DOCKER_VERSION=`cat $CWD/.docker-version`
+fi
+
+# Check that dependencies are installed
+if ! hash VBoxManage 2>/dev/null
+then
+  echo "Error: you need to install VirtualBox before you can use docker-osx"
+  echo "You can download it at http://www.virtualbox.org/"
+  exit 1
+fi
+
+# Set up docker-osx directory
+if [ ! -d "$CWD" ]
+then
+  mkdir "$CWD"
+fi
+
+if ! grep -q $DOCKER_HOST /etc/hosts
+then
+  echo "Adding $DOCKER_HOST to /etc/hosts (may need your password for sudo)..."
+  sudo sh -c "echo '$DOCKER_IP $DOCKER_HOST' >> /etc/hosts"
+fi
+
+# Download Docker client if it doesn't exist or needs updating
+if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
+then
+  echo "Installing Docker $DOCKER_VERSION client..."
+  mkdir -p "$CWD/bin"
+  curl "$DOCKER_CLIENT_URL" > /tmp/docker-osx-client
+  mv /tmp/docker-osx-client "$DOCKER_BIN"
+  chmod +x "$DOCKER_BIN"
+fi
+
+if [ $1 != "halt" ]
+then
+    start_vm
+fi
+
+# Update Boot2Docker ISO
+if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
+then
+    download_iso
+fi
+
+# Set current installed Docker version
+echo $DOCKER_VERSION > $CWD/.docker-version
+
+case "$1" in
+  ssh)
+    echo "Password: tcuser"
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "docker@$DOCKER_IP"
+    ;;
+  halt)
+    if VBoxManage list runningvms | grep boot2docker >/dev/null
+    then
+        VBoxManage controlvm boot2docker poweroff
+    fi
+    ;;
+  ping)
+    ping $DOCKER_IP
+    ;;
+  help)
+    help
+    ;;
+  "")
+    help
+    ;;
+  *)
+    $DOCKER_CMD $*
+    exit $?
+esac
+
