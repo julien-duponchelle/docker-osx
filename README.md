@@ -3,7 +3,7 @@ docker-osx
 
 # WARNING
 
-This an unofficial docker wrapper made to simplify docker usage on OSX. In a near futur docker (version 0.7.3) will provide official binary for client part.
+This an unofficial docker wrapper made to simplify docker usage on OSX. In a near future, docker(version 0.7.3) will provide official binary for client part.
 
 # What is docker-osx
 
