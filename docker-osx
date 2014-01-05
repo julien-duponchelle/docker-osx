@@ -23,15 +23,77 @@ set -e
 export VAGRANT_CWD="$HOME/.docker-osx"
 
 export DOCKER_IP="172.16.42.43"
-export DOCKER_HOST="localdocker"
+export DOCKER_DOMAIN="localdocker"
 export DOCKER_PORT="4243"
 
 export DOCKER_VERSION="0.7.3"
 export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.3.tgz"
 export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
-DOCKER_BIN="/usr/local/bin/docker"
-DOCKER_CMD="$DOCKER_BIN -H=tcp://$DOCKER_IP:$DOCKER_PORT"
+export DOCKER_BIN="/usr/local/bin/docker"
+export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
+
+##########
+function setup_etc_host {
+  if [ -f "$VAGRANT_CWD/.localdocker-host" ] && [ `cat "$VAGRANT_CWD/.localdocker-host"` = "0" ]
+  then
+    return
+  fi
+  if ! grep -q localdocker /etc/hosts
+  then
+    echo "Adding localdocker to /etc/hosts (may need your password for sudo)..."
+
+    echo "If you want you can add it manually by adding:"
+    echo "$DOCKER_IP localdocker add the end of the /etc/hosts"
+    echo ""
+    echo "Or you can just ignore it and directly use the ip: $DOCKER_IP"
+
+    read -p "Add the localdocker host to system configuration? [y/n] " -n 1 -r
+    echo    # move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+      sudo sh -c "echo '$DOCKER_IP $DOCKER_DOMAIN' >> /etc/hosts"
+      echo -n 1 > "$VAGRANT_CWD/.localdocker-host" # We need to check the /etc/hosts at each launch    
+    else
+      echo -n 0 > "$VAGRANT_CWD/.localdocker-host" # We never check the /etc/hosts at launch          
+    fi
+  fi 
+}
+
+function help() {
+  echo "docker-osx commands:"
+  echo "    start     Start local docker virtual machine"
+  echo "    destroy   Destroy local docker virtual machine"
+  echo "    halt      Halt docker daemon and virtual machine"
+  echo "    ssh       Open SSH console on vagrant box"
+  echo "    shell     Open a shell with Docker VM started and environnement set"
+  echo ""
+}
+
+function start_vm() {
+    # Start virtual machine if it isn't running
+    if ! vagrant status | grep -q running
+    then
+      if [[ $1 == "halt" ]]
+      then
+        echo "Docker is not running. Exiting"
+        exit 0
+      fi
+      echo "Start Docker Virtual machine"
+      vagrant up
+      vagrant ssh -c "sudo stop docker; sudo start docker"
+    fi
+
+
+    # Update Docker on virtual machine if it needs updating
+    if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
+    then
+      vagrant provision
+      vagrant ssh -c "sudo stop docker; sudo start docker"  
+    fi
+}
+
+############
 
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
@@ -77,11 +139,7 @@ Vagrant.configure("2") do |config|
 end
 EOL
 
-if ! grep -q $DOCKER_HOST /etc/hosts
-then
-  echo "Adding $DOCKER_HOST to /etc/hosts (may need your password for sudo)..."
-  sudo sh -c "echo '$DOCKER_IP $DOCKER_HOST' >> /etc/hosts"
-fi
+setup_etc_host
 
 # Download Docker client if it doesn't exist or needs updating
 if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
@@ -89,54 +147,49 @@ then
   echo "Installing Docker $DOCKER_VERSION client..."
   mkdir -p "$VAGRANT_CWD/bin"
   curl "$DOCKER_CLIENT_URL" > /tmp/docker-osx-client.tgz
-  tar -xvzf /tmp/docker-osx-client.tgz -C / /usr/local/bin/docker
+  tar -xzf /tmp/docker-osx-client.tgz -C / usr/local/bin/docker
   chmod +x "$DOCKER_BIN"
 fi
 
-# Start virtual machine if it isn't running
-if ! vagrant status | grep -q running
-then
-  if [[ $1 == "halt" ]]
-  then
-    echo "Docker is not running. Exiting"
-    exit 0
-  fi
-  vagrant up
-  vagrant ssh -c "sudo stop docker; sudo start docker"
-fi
-
-# Update Docker on virtual machine if it needs updating
-if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
-then
-  vagrant provision
-fi
 
 # Set current installed Docker version
 echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
-function help() {
-  $DOCKER_CMD help
-  echo "Docker.sh additional commands:"
-  echo "    halt      Halt docker daemon and virtual machine"
-  echo "    ssh       Open SSH console on vagrant box"
-  echo ""
-}
-
 case "$1" in
+  start)
+    start_vm
+    echo "If you want to connect to docker pass argument -H=$DOCKER_HOST"
+    echo "Or export DOCKER_HOST=$DOCKER_HOST"
+    exit 0
+    ;;
+  destroy)
+    vagrant destroy
+    exit 0
+    ;;
   ssh)
+    start_vm
     vagrant ssh
+    exit 0
     ;;
   halt)
     vagrant halt
+    exit 0
     ;;
   help)
     help
+    exit 0
     ;;
   "")
     help
+    exit 0
     ;;
-  *)
-    $DOCKER_CMD $*
-    exit $?
+  shell)
+    echo "Start local docker environnement"
+    start_vm
+    $SHELL
+    echo "Stop local docker environnement"
+    vagrant halt
+    exit 0
+    ;;
 esac
 
