@@ -26,8 +26,8 @@ export DOCKER_IP="172.16.42.43"
 export DOCKER_DOMAIN="localdocker"
 export DOCKER_PORT="4243"
 
-export DOCKER_VERSION="0.7.3"
-export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.3.tgz"
+export DOCKER_VERSION="0.7.5"
+export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.5.tgz"
 export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
 export DOCKER_BIN="/usr/local/bin/docker"
