@@ -184,10 +184,10 @@ case "$1" in
     exit 0
     ;;
   shell)
-    echo "Start local docker environnement"
+    echo "Starting local Docker environment..."
     start_vm
     $SHELL
-    echo "Stop local docker environnement"
+    echo "Stopping local Docker environment..."
     vagrant halt
     exit 0
     ;;
