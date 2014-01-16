@@ -1,6 +1,12 @@
 docker-osx
 ==========
 
+# WILL BE DEPRECATED
+
+boot2docker provide an init script with most of docker-osx features and more support:
+https://github.com/steeve/boot2docker
+
+
 # WARNING
 
 This an unofficial docker helper made to simplify docker usage on OSX.
