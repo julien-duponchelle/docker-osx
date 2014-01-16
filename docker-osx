@@ -7,12 +7,12 @@
 # https://github.com/noplay/docker-osx
 #
 # Copyright 2013 Julien Duponchelle
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
 # file except in compliance with the License. You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed under
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
@@ -26,8 +26,8 @@ export DOCKER_IP="172.16.42.43"
 export DOCKER_DOMAIN="localdocker"
 export DOCKER_PORT="4243"
 
-export DOCKER_VERSION="0.7.3"
-export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.3.tgz"
+export DOCKER_VERSION="0.7.6"
+export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.6.tgz"
 export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
 export DOCKER_BIN="/usr/local/bin/docker"
@@ -53,11 +53,11 @@ function setup_etc_host {
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
       sudo sh -c "echo '$DOCKER_IP $DOCKER_DOMAIN' >> /etc/hosts"
-      echo -n 1 > "$VAGRANT_CWD/.localdocker-host" # We need to check the /etc/hosts at each launch    
+      echo -n 1 > "$VAGRANT_CWD/.localdocker-host" # We need to check the /etc/hosts at each launch
     else
-      echo -n 0 > "$VAGRANT_CWD/.localdocker-host" # We never check the /etc/hosts at launch          
+      echo -n 0 > "$VAGRANT_CWD/.localdocker-host" # We never check the /etc/hosts at launch
     fi
-  fi 
+  fi
 }
 
 function help() {
@@ -89,7 +89,7 @@ function start_vm() {
     if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
     then
       vagrant provision
-      vagrant ssh -c "sudo stop docker; sudo start docker"  
+      vagrant ssh -c "sudo stop docker; sudo start docker"
     fi
 }
 
