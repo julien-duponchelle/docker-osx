@@ -198,5 +198,11 @@ case "$1" in
     vagrant halt
     exit 0
     ;;
+  *)
+    echo "Unrecognised command: $1"
+    echo
+    help
+    exit 1
+    ;;
 esac
 
