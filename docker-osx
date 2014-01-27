@@ -105,8 +105,13 @@ fi
 # Check that dependencies are installed
 if ! hash vagrant 2>/dev/null
 then
-  echo "Error: you need to install Vagrant before you can use docker-osx"
-  echo "You can download it at http://www.vagrantup.com/"
+  echo "You need VirtualBox and Vagrant to use docker-osx."
+  echo
+  echo "You can download VirtualBox from:"
+  echo "https://www.virtualbox.org/wiki/Downloads"
+  echo
+  echo "You can download Vagrant from:"
+  echo "http://www.vagrantup.com/downloads.html"
   exit 1
 fi
 
