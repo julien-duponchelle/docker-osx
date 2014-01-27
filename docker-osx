@@ -158,6 +158,8 @@ echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 case "$1" in
   start)
     start_vm
+    echo "Docker is running."
+    echo
     echo "If you want to connect to docker pass argument -H=$DOCKER_HOST"
     echo "Or export DOCKER_HOST=$DOCKER_HOST"
     exit 0
