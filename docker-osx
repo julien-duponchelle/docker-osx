@@ -150,9 +150,11 @@ setup_etc_host
 if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
 then
   echo "Installing Docker $DOCKER_VERSION client..."
-  mkdir -p "$VAGRANT_CWD/bin"
+  destdir=`dirname "$DOCKER_BIN"`
+  destname=`basename "$DOCKER_BIN"`
+  mkdir -p "$destdir"
   curl "$DOCKER_CLIENT_URL" > /tmp/docker-osx-client.tgz
-  tar -xzf /tmp/docker-osx-client.tgz -C / usr/local/bin/docker
+  tar -xzf /tmp/docker-osx-client.tgz -C "$destdir" -s /docker/"$destname"/ --strip-components 3 usr/local/bin/docker
   chmod +x "$DOCKER_BIN"
 fi
 
