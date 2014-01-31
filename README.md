@@ -1,11 +1,6 @@
 docker-osx
 ==========
 
-# WILL BE DEPRECATED
-
-boot2docker provide an init script with most of docker-osx features and more support:
-https://github.com/steeve/boot2docker
-
 
 # WARNING
 
@@ -59,6 +54,11 @@ Open a console on the Vagrant virtual machine.
 
 * [Julien Duponchelle](https://github.com/noplay/) – Original author
 * [Ben Firshman](https://github.com/bfirsh) – Faster and simpler installation with Vagrant image and pre-built binary
+
+
+## Alternatives
+
+boot2docker provide an init script with most of docker-osx features and a dynamic team: https://github.com/steeve/boot2docker
 
 ## Licence
 
