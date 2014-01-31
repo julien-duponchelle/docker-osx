@@ -22,16 +22,24 @@ set -e
 
 export VAGRANT_CWD="$HOME/.docker-osx"
 
-export DOCKER_IP="172.16.42.43"
-export DOCKER_DOMAIN="localdocker"
-export DOCKER_PORT="4243"
+DOCKER_IP="172.16.42.43"
+DOCKER_DOMAIN="localdocker"
+DOCKER_PORT="4243"
 
-export DOCKER_VERSION="0.7.6"
-export DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.6.tgz"
-export VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
+DOCKER_VERSION="0.7.6"
+DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.7.6.tgz"
+VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box"
 
-export DOCKER_BIN="/usr/local/bin/docker"
-export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
+DOCKER_BIN="/usr/local/bin/docker"
+
+DOCKER_DEFAULTS_FILE="$VAGRANT_CWD/defaults"
+
+if [ -f "$DOCKER_DEFAULTS_FILE" ];
+then
+    . "$DOCKER_DEFAULTS_FILE"
+fi
+
+DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
 
 ##########
 function setup_etc_host {
