@@ -19,7 +19,7 @@ Docker on OS X in three steps:
 
 3. Run:
 
-        docker-osx start
+        docker-osx shell
         docker version
 
 This script acts as both an installer and as Virtual machine manager. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then setup the shell environnement for docker in order to access to the virtual machine.
