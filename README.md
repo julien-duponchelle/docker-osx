@@ -19,7 +19,7 @@ Docker on OS X in three steps:
 
 3. Run:
 
-        docker-osx shell
+        docker-osx start
         docker version
 
 This script acts as both an installer and as Virtual machine manager. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then setup the shell environnement for docker in order to access to the virtual machine.
@@ -49,6 +49,64 @@ Stop the Vagrant VM. You'll probably want to do this after you've finished worki
 ### docker-osx ssh
 
 Open a console on the Vagrant virtual machine.
+
+## Override defaults
+
+The docker-osx script has several options that can be overridden by adding a
+new file `$HOME/.docker-osx/defaults`. When docker-osx starts the VM, it will
+source this file.
+
+When modifying the defaults for docker-osx, currently, it is best to destroy
+any already-created VM and configure a new one with the changes.
+
+An example `defaults` file follows:
+
+```bash
+# $HOME/.docker-osx/defaults
+DOCKER_IP=192.168.228.10
+```
+
+### DOCKER_BIN
+
+The installed location of the docker client.
+
+Default: `/usr/local/bin/docker`
+
+### DOCKER_IP
+
+The IP that the docker host will be mapped to on your machine.
+
+Default: `172.16.42.43`
+
+### DOCKER_DOMAIN
+
+The domain name added to `/etc/hosts`, pointing at the `DOCKER_IP`.
+
+Default: `localdocker`
+
+### DOCKER_PORT
+
+The port that docker will be listening on.
+
+Default: `4243`
+
+### DOCKER_VERSION
+
+The version of docker that will be installed when provisioning the vagrant vm.
+
+Default: `0.7.6`
+
+### DOCKER_CLIENT_URL
+
+The URL used to download the docker client.
+
+Default: <http://get.docker.io/builds/Darwin/x86_64/docker-0.7.6.tgz>
+
+### VAGRANT_BOX_URL
+
+The URL used to download the vagrant box.
+
+Default: <http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box>
 
 ## Contributors
 
