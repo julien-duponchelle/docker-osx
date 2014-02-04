@@ -39,7 +39,7 @@ then
     . "$DOCKER_DEFAULTS_FILE"
 fi
 
-DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
+export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
 
 ##########
 function setup_etc_host {
