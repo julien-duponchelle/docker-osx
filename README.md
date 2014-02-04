@@ -22,6 +22,12 @@ Docker on OS X in three steps:
         docker-osx shell
         docker version
 
+alternatively: 
+
+        docker-osx start
+        (use docker command line anywhere on os-x)
+
+
 This script acts as both an installer and as Virtual machine manager. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then setup the shell environnement for docker in order to access to the virtual machine.
 
 The virtual machine that Docker runs on is given the hostname `localdocker`. For example, if you run `docker run -p 8000:8000 ...`, then that will be available at `localdocker:8000` from OS X.
@@ -34,21 +40,22 @@ The virtual machine that Docker runs on is given the hostname `localdocker`. For
 
 Start the local Virtual Machine
 
+### docker-osx ssh
+
+Open a console on the Vagrant virtual machine.
+
 ### docker-osx destroy
 
 Destroy the local Virtual Machine
-
-### docker-osx shell
-
-Start the virtual machine and open a shell with DOCKER_HOST environnement variable configured.
 
 ### docker-osx halt
 
 Stop the Vagrant VM. You'll probably want to do this after you've finished working with Docker project to save RAM.
 
-### docker-osx ssh
+### docker-osx shell
 
-Open a console on the Vagrant virtual machine.
+Start the virtual machine and open a shell with DOCKER_HOST environnement variable configured.
+
 
 ## Override defaults
 
