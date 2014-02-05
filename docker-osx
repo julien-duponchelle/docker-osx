@@ -74,7 +74,7 @@ function help() {
   echo "    halt      Halt docker daemon and virtual machine"
   echo "    ssh       Open SSH console on vagrant box"  
   echo "    destroy   Destroy local docker virtual machine"
-  echo "    shell     Open a shell with Docker VM started and environnement set"
+  echo "    shell     Open a shell with Docker VM started and environment set"
   echo ""
 }
 
