@@ -14,14 +14,16 @@ Docker on OS X in three steps:
 
 2. Put the `docker-osx` script somewhere on your path:
 
-        curl https://raw.github.com/noplay/docker-osx/0.7.6/docker-osx > /usr/local/bin/docker-osx
+        curl https://raw.github.com/michaelneale/docker-osx/master/docker-osx > /usr/local/bin/docker-osx
         chmod +x /usr/local/bin/docker-osx
+        
+3. Tell the docker command line where the host is
+        export DOCKER_HOST=tcp://172.16.42.43:4243  
 
-3. Run:
+4. Run:
 
-        docker-osx shell
+        docker-osx start
         docker version
-
 
 This script acts as both an installer and as Virtual machine manager. On first run, it installs an OS X binary of the Docker client and starts a virtual machine with the Docker daemon running. It then sets up the shell environment so the Docker client knows to talk to the Docker daemon on the virtual machine.
 
