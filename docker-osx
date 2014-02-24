@@ -184,7 +184,7 @@ echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
 case "$1" in
   up|start)
-    #start_vm
+    start_vm
     echo
     echo "The virtual machine with the docker daemon is now running."
     echo "To shut it down and save memory, when you are finished, run:"
