@@ -70,11 +70,15 @@ function setup_etc_host {
 
 function help() {
   echo "docker-osx commands:"
-  echo "    start     Start local docker virtual machine"
-  echo "    halt      Halt docker daemon and virtual machine"
-  echo "    ssh       Open SSH console on vagrant box"  
-  echo "    destroy   Destroy local docker virtual machine"
-  echo "    shell     Open a shell with Docker VM started and environment set"
+  echo "  start     Start local docker virtual machine"
+  echo "  halt      Halt docker daemon and virtual machine"
+  echo "  suspend   Suspend local docker virtual machine"
+  echo "  status    Outputs status of the local docker virtual machine"
+  echo "  destroy   Destroy local docker virtual machine"
+  echo "  vagrant   Issue subcommands directly to the vagrant CLI"
+  echo "  ssh       Open SSH console on vagrant box"  
+  echo "  env       Outputs environment variables for Docker to connect remotely"
+  echo "  shell     Open a shell with Docker VM started and environment set"
   echo ""
 }
 
@@ -179,33 +183,35 @@ fi
 echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
 case "$1" in
-  start)
+  up|start)
     start_vm
-    echo "Docker is running."
-    echo "To save memory when you are finished working with docker, run:"
-    echo "docker-osx halt"
     echo
-    echo "To use docker:" 
-    echo "export DOCKER_HOST=$DOCKER_HOST"
-    echo "and then use the docker command from os-x directly."
-    echo 
-    echo "(you can add this to your .profile to make it permanent."
-    echo "Alternatively you can pass -H=$DOCKER_HOST when using docker)"
+    echo "The virtual machine with the docker daemon is now running."
+    echo "When you are finished and want to shut it down, just run:"
+    echo
+    echo "  docker-osx halt"
+    echo
+    echo "To use docker, point the DOCKER_HOST environment variable"
+    echo "to the docker daemon running on the virtual machine:"
+    echo
+    echo "  eval \`docker-osx env\`"
+    echo
+    echo "Put this in your .profile to make it permanent."
+    #echo "(Alternatively, pass -H=$DOCKER_HOST on the command line.)"
+    echo
+    echo "Then, just use the docker command from OS X directly."
     echo 
     exit 0
     ;;
   destroy)
-    vagrant destroy
-    exit 0
+    exec vagrant destroy
     ;;
   ssh)
     start_vm
-    vagrant ssh
-    exit 0
+    exec vagrant ssh
     ;;
-  halt)
-    vagrant halt
-    exit 0
+  stop|halt)
+    exec vagrant halt
     ;;
   help)
     help
@@ -220,8 +226,21 @@ case "$1" in
     start_vm
     $SHELL
     echo "Stopping local Docker environment..."
-    vagrant halt
+    exec vagrant halt
+    ;;
+  env)
+    echo "export DOCKER_HOST=$DOCKER_HOST"
     exit 0
+    ;;
+  vagrant)
+    shift
+    exec vagrant $*
+    ;;
+  status)
+    exec vagrant status
+    ;;
+  suspend|pause)
+    exec vagrant suspend
     ;;
   *)
     echo "Unrecognised command: $1"
