@@ -192,7 +192,7 @@ case "$1" in
     echo "  docker-osx halt"
     echo
     echo "To use docker, set the DOCKER_HOST environment variable to point"
-    echo "to the docker daemon running on virtual machine:"
+    echo "to the docker daemon running on the virtual machine:"
     echo
     echo "  eval \`docker-osx env\`"
     echo
