@@ -184,18 +184,22 @@ echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
 case "$1" in
   up|start)
-    start_vm
-    echo "Docker is running."
-    echo "To save memory when you are finished working with docker, run:"
-    echo "docker-osx halt"
+    #start_vm
     echo
-    echo "To use docker set DOCKER_HOST as follows:"
-    echo "  eval `docker-osx env`"
-	echo "(equivalent to \"export DOCKER_HOST=$DOCKER_HOST\")"
-    echo "and then use the docker command from OS X directly."
-    echo 
-    echo "You can put this in your .profile to make it permanent."
-    echo "Alternatively you can pass -H=$DOCKER_HOST when using docker."
+    echo "The virtual machine with the docker daemon is now running."
+    echo "To shut it down and save memory, when you are finished, run:"
+    echo
+    echo "  docker-osx halt"
+    echo
+    echo "To use docker, set the DOCKER_HOST environment variable to point"
+    echo "to the docker daemon running on virtual machine:"
+    echo
+    echo "  eval \`docker-osx env\`"
+    echo
+    echo "Put this in your .profile to make it permanent."
+    #echo "(Alternatively, pass -H=$DOCKER_HOST on the command line.)"
+    echo
+    echo "Then just use the docker command from OS X directly."
     echo 
     exit 0
     ;;
@@ -229,20 +233,20 @@ case "$1" in
     exit 0
     ;;
   env)
-	echo "export DOCKER_HOST=$DOCKER_HOST"
+    echo "export DOCKER_HOST=$DOCKER_HOST"
     exit 0
     ;;
   vagrant)
-	shift
-	exec vagrant $*
+    shift
+    exec vagrant $*
     ;;
   status)
-	shift
-	exec vagrant status
+    shift
+    exec vagrant status
     ;;
   suspend|pause)
-	shift
-	exec vagrant suspend
+    shift
+    exec vagrant suspend
     ;;
   *)
     echo "Unrecognised command: $1"
