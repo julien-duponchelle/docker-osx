@@ -187,11 +187,11 @@ case "$1" in
     start_vm
     echo
     echo "The virtual machine with the docker daemon is now running."
-    echo "To shut it down and save memory, when you are finished, run:"
+    echo "When you are finished and want to shut it down, just run:"
     echo
     echo "  docker-osx halt"
     echo
-    echo "To use docker, set the DOCKER_HOST environment variable to point"
+    echo "To use docker, point the DOCKER_HOST environment variable"
     echo "to the docker daemon running on the virtual machine:"
     echo
     echo "  eval \`docker-osx env\`"
@@ -199,22 +199,19 @@ case "$1" in
     echo "Put this in your .profile to make it permanent."
     #echo "(Alternatively, pass -H=$DOCKER_HOST on the command line.)"
     echo
-    echo "Then just use the docker command from OS X directly."
+    echo "Then, just use the docker command from OS X directly."
     echo 
     exit 0
     ;;
   destroy)
-    vagrant destroy
-    exit 0
+    exec vagrant destroy
     ;;
   ssh)
     start_vm
-    vagrant ssh
-    exit 0
+    exec vagrant ssh
     ;;
   stop|halt)
-    vagrant halt
-    exit 0
+    exec vagrant halt
     ;;
   help)
     help
@@ -229,8 +226,7 @@ case "$1" in
     start_vm
     $SHELL
     echo "Stopping local Docker environment..."
-    vagrant halt
-    exit 0
+    exec vagrant halt
     ;;
   env)
     echo "export DOCKER_HOST=$DOCKER_HOST"
@@ -241,11 +237,9 @@ case "$1" in
     exec vagrant $*
     ;;
   status)
-    shift
     exec vagrant status
     ;;
   suspend|pause)
-    shift
     exec vagrant suspend
     ;;
   *)
