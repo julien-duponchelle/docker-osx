@@ -70,11 +70,15 @@ function setup_etc_host {
 
 function help() {
   echo "docker-osx commands:"
-  echo "    start     Start local docker virtual machine"
-  echo "    halt      Halt docker daemon and virtual machine"
-  echo "    ssh       Open SSH console on vagrant box"  
-  echo "    destroy   Destroy local docker virtual machine"
-  echo "    shell     Open a shell with Docker VM started and environment set"
+  echo "  start     Start local docker virtual machine"
+  echo "  halt      Halt docker daemon and virtual machine"
+  echo "  suspend   Suspend local docker virtual machine"
+  echo "  status    Outputs status of the local docker virtual machine"
+  echo "  destroy   Destroy local docker virtual machine"
+  echo "  vagrant   Issue subcommands directly to the vagrant CLI"
+  echo "  ssh       Open SSH console on vagrant box"  
+  echo "  env       Outputs environment variables for Docker to connect remotely"
+  echo "  shell     Open a shell with Docker VM started and environment set"
   echo ""
 }
 
@@ -179,18 +183,19 @@ fi
 echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
 case "$1" in
-  start)
+  up|start)
     start_vm
     echo "Docker is running."
     echo "To save memory when you are finished working with docker, run:"
     echo "docker-osx halt"
     echo
-    echo "To use docker:" 
-    echo "export DOCKER_HOST=$DOCKER_HOST"
-    echo "and then use the docker command from os-x directly."
+    echo "To use docker set DOCKER_HOST as follows:"
+    echo "  eval `docker-osx env`"
+	echo "(equivalent to \"export DOCKER_HOST=$DOCKER_HOST\")"
+    echo "and then use the docker command from OS X directly."
     echo 
-    echo "(you can add this to your .profile to make it permanent."
-    echo "Alternatively you can pass -H=$DOCKER_HOST when using docker)"
+    echo "You can put this in your .profile to make it permanent."
+    echo "Alternatively you can pass -H=$DOCKER_HOST when using docker."
     echo 
     exit 0
     ;;
@@ -203,7 +208,7 @@ case "$1" in
     vagrant ssh
     exit 0
     ;;
-  halt)
+  stop|halt)
     vagrant halt
     exit 0
     ;;
@@ -222,6 +227,22 @@ case "$1" in
     echo "Stopping local Docker environment..."
     vagrant halt
     exit 0
+    ;;
+  env)
+	echo "export DOCKER_HOST=$DOCKER_HOST"
+    exit 0
+    ;;
+  vagrant)
+	shift
+	exec vagrant $*
+    ;;
+  status)
+	shift
+	exec vagrant status
+    ;;
+  suspend|pause)
+	shift
+	exec vagrant suspend
     ;;
   *)
     echo "Unrecognised command: $1"
