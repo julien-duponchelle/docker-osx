@@ -204,14 +204,17 @@ case "$1" in
     exit 0
     ;;
   destroy)
-    exec vagrant destroy
+    shift
+    exec vagrant destroy "$@"
     ;;
   ssh)
     start_vm
-    exec vagrant ssh
+    shift
+    exec vagrant ssh "$@"
     ;;
   stop|halt)
-    exec vagrant halt
+    shift
+    exec vagrant halt "$@"
     ;;
   help)
     help
