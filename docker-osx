@@ -75,6 +75,7 @@ function help() {
   echo "  suspend   Suspend local docker virtual machine"
   echo "  status    Outputs status of the local docker virtual machine"
   echo "  destroy   Destroy local docker virtual machine"
+  echo "  clear     Remove all docker images and (running) containers"
   echo "  vagrant   Issue subcommands directly to the vagrant CLI"
   echo "  ssh       Open SSH console on vagrant box"  
   echo "  env       Outputs environment variables for Docker to connect remotely"
@@ -206,6 +207,11 @@ case "$1" in
   destroy)
     shift
     exec vagrant destroy "$@"
+    ;;
+  clear)
+    docker kill $(docker ps -q) 2> /dev/null
+    docker rm $(docker ps -a -q) 2> /dev/null
+    docker rmi $(docker images -q) 2> /dev/null
     ;;
   ssh)
     start_vm
