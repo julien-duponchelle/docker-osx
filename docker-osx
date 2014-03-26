@@ -20,53 +20,27 @@
 
 set -e
 
-export VAGRANT_CWD="$HOME/.docker-osx"
+export DOCKER_OSX_CWD="$HOME/.docker-osx"
 
-DOCKER_IP="172.16.42.43"
-DOCKER_DOMAIN="localdocker"
-DOCKER_PORT="4243"
-
-DOCKER_VERSION="0.8.0"
+DOCKER_VERSION="0.9.0"
 DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.8.0.tgz"
-VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box"
-
 DOCKER_BIN="/usr/local/bin/docker"
 
-DOCKER_DEFAULTS_FILE="$VAGRANT_CWD/defaults"
+BOOT2DOCKER_ISO="https://dl.dropboxusercontent.com/u/12014139/boot2docker.iso"
+BOOT2DOCKER_CLIENT_URL="https://raw.githubusercontent.com/cameronmaske/boot2docker/host-only/boot2docker"
+BOOT2DOCKER_BIN="/usr/local/bin/boot2docker"
+BOOT2DOCKER_CWD="$HOME/.boot2docker"
+
+DOCKER_DEFAULTS_FILE="$DOCKER_OSX_CWD/defaults"
 
 if [ -f "$DOCKER_DEFAULTS_FILE" ];
 then
     . "$DOCKER_DEFAULTS_FILE"
 fi
 
-export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
+# This is set by boot2docker. Can't control it.
+export DOCKER_HOST="tcp://localhost:4243"
 
-##########
-function setup_etc_host {
-  if [ -f "$VAGRANT_CWD/.localdocker-host" ] && [ `cat "$VAGRANT_CWD/.localdocker-host"` = "0" ]
-  then
-    return
-  fi
-  if ! grep -q localdocker /etc/hosts
-  then
-    echo "Adding localdocker to /etc/hosts (may need your password for sudo)..."
-
-    echo "If you want you can add it manually by adding:"
-    echo "$DOCKER_IP localdocker add the end of the /etc/hosts"
-    echo ""
-    echo "Or you can just ignore it and directly use the ip: $DOCKER_IP"
-
-    read -p "Add the localdocker host to system configuration? [y/n] " -n 1 -r
-    echo    # move to a new line
-    if [[ $REPLY =~ ^[Yy]$ ]]
-    then
-      sudo sh -c "echo '$DOCKER_IP $DOCKER_DOMAIN' >> /etc/hosts"
-      echo -n 1 > "$VAGRANT_CWD/.localdocker-host" # We need to check the /etc/hosts at each launch
-    else
-      echo -n 0 > "$VAGRANT_CWD/.localdocker-host" # We never check the /etc/hosts at launch
-    fi
-  fi
-}
 
 function help() {
   echo "docker-osx commands:"
@@ -76,96 +50,78 @@ function help() {
   echo "  status    Outputs status of the local docker virtual machine"
   echo "  destroy   Destroy local docker virtual machine"
   echo "  clear     Remove all docker images and (running) containers"
-  echo "  vagrant   Issue subcommands directly to the vagrant CLI"
-  echo "  ssh       Open SSH console on vagrant box"  
+  echo "  ssh       Open SSH console on boot2docker box"
   echo "  env       Outputs environment variables for Docker to connect remotely"
   echo "  shell     Open a shell with Docker VM started and environment set"
   echo ""
 }
 
+
 function start_vm() {
-    # Start virtual machine if it isn't running
-    if ! vagrant status | grep -q running
-    then
-      if [[ $1 == "halt" ]]
-      then
-        echo "Docker is not running. Exiting"
-        exit 0
-      fi
-      echo "Start Docker Virtual machine"
-      vagrant up
-      vagrant ssh -c "sudo stop docker; sudo start docker"
-    fi
+  # Setup a shared folder.
+  if ! VBoxManage showvminfo boot2docker-vm | grep -q "Name: 'home', Host path:"
+  then
+    echo "Mounting folders to Docker Virtual machine"
+    VBoxManage sharedfolder add boot2docker-vm -name home -hostpath $HOME >> /dev/null 2>&1
+    MOUNT_FOLDER="true"
+  fi
 
-
-    # Update Docker on virtual machine if it needs updating
-    if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
+  # Start virtual machine if it isn't running
+  if ! boot2docker status | grep -q running
+  then
+    echo "Start Docker Virtual machine"
+    boot2docker up
+    if [[ -n "$MOUNT_FOLDER" ]]
     then
-      vagrant provision
-      vagrant ssh -c "sudo stop docker; sudo start docker"
+      echo "Enter the password 'tcuser' below to mount folders to Docker Virtual Machine"
+      boot2docker ssh "sudo modprobe vboxsf && mkdir -p $HOME && sudo mount -t vboxsf home $HOME"
     fi
+  fi
 }
 
 ############
 
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
-if [ -f $VAGRANT_CWD/.docker-version ]
+if [ -f $DOCKER_OSX_CWD/.docker-version ]
 then
-  INSTALLED_DOCKER_VERSION=`cat $VAGRANT_CWD/.docker-version`
+  INSTALLED_DOCKER_VERSION=`cat $DOCKER_OSX_CWD/.docker-version`
 fi
 
 # Check that dependencies are installed
-if ! hash vagrant 2>/dev/null
+if ! hash VBoxManage 2>/dev/null
 then
-  echo "You need VirtualBox and Vagrant to use docker-osx."
+  echo "You need VirtualBox to use docker-osx."
   echo
   echo "You can download VirtualBox from:"
   echo "https://www.virtualbox.org/wiki/Downloads"
   echo
-  echo "You can download Vagrant from:"
-  echo "http://www.vagrantup.com/downloads.html"
   exit 1
 fi
 
-# Set up Vagrant directory
-if [ ! -d "$VAGRANT_CWD" ]
+# Set up Docker-osx directory
+if [ ! -d "$DOCKER_OSX_CWD" ]
 then
-  mkdir "$VAGRANT_CWD"
+  mkdir "$DOCKER_OSX_CWD"
 fi
 
-# Will want to update when docker version is bumped
-if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
+# Download boot2docker if it doesn't exist.
+if ! hash boot2docker 2>/dev/null
 then
-  INSTALL_UPDATE_DOCKER="apt-get update; apt-get install -y lxc-docker-$DOCKER_VERSION"
+  echo "Installing boot2docker client..."
+  curl "$BOOT2DOCKER_CLIENT_URL" > /usr/local/bin/boot2docker
+  chmod +x "$BOOT2DOCKER_BIN"
+  mkdir -p "$BOOT2DOCKER_CWD"
+  echo "Installing boot2docker iso..."
+  curl "$BOOT2DOCKER_ISO" > "$BOOT2DOCKER_CWD/boot2docker.iso"
 fi
 
-
-cat > "$VAGRANT_CWD/Vagrantfile" <<EOL
-# automatically generated by docker-osx
-# do not edit this file - find the template in docker-osx script instead!
-Vagrant.configure("2") do |config|
-  config.vm.box = "docker-0.8.0"
-  config.vm.box_url = "$VAGRANT_BOX_URL"
-
-  config.ssh.forward_agent = true
-  config.vm.network "private_network", :ip => "$DOCKER_IP"
-  config.vm.provision :shell, :inline => "$INSTALL_UPDATE_DOCKER"
-  config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:$DOCKER_PORT\"' >> /etc/default/docker"
-  config.vm.synced_folder "$(echo ~)", "$(echo ~)", :create => true
-
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ['modifyvm', :id, '--memory', ENV['VM_MEMORY'] || 1024]
-    vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
-    vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
-  end
-
-  vagrantfile_extra = "#{ENV['VAGRANT_CWD']}/Vagrantfile_extra.rb"
-  eval File.open(vagrantfile_extra).read if File.exists?(vagrantfile_extra)
-end
-EOL
-
-setup_etc_host
+# Initialize boot2docker.
+if ! VBoxManage list vms | grep -q boot2docker
+then
+  echo "Initializing boot2docker..."
+  boot2docker init
+fi
 
 # Download Docker client if it doesn't exist or needs updating
 if [[ ! -f "$DOCKER_BIN" || $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
@@ -179,9 +135,8 @@ then
   chmod +x "$DOCKER_BIN"
 fi
 
-
 # Set current installed Docker version
-echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
+echo $DOCKER_VERSION > $DOCKER_OSX_CWD/.docker-version
 
 case "$1" in
   up|start)
@@ -201,12 +156,13 @@ case "$1" in
     #echo "(Alternatively, pass -H=$DOCKER_HOST on the command line.)"
     echo
     echo "Then, just use the docker command from OS X directly."
-    echo 
+    echo
     exit 0
     ;;
   destroy)
     shift
-    exec vagrant destroy "$@"
+    boot2docker stop
+    exec boot2docker delete
     ;;
   clear)
     docker kill $(docker ps -q) 2> /dev/null
@@ -216,11 +172,11 @@ case "$1" in
   ssh)
     start_vm
     shift
-    exec vagrant ssh "$@"
+    exec boot2docker ssh "$@"
     ;;
   stop|halt)
     shift
-    exec vagrant halt "$@"
+    exec boot2docker stop
     ;;
   help)
     help
@@ -235,21 +191,17 @@ case "$1" in
     start_vm
     $SHELL
     echo "Stopping local Docker environment..."
-    exec vagrant halt
+    exec boot2docker stop
     ;;
   env)
     echo "export DOCKER_HOST=$DOCKER_HOST"
     exit 0
     ;;
-  vagrant)
-    shift
-    exec vagrant $*
-    ;;
   status)
-    exec vagrant status
+    exec boot2docker status
     ;;
   suspend|pause)
-    exec vagrant suspend
+    exec boot2docker pause
     ;;
   *)
     echo "Unrecognised command: $1"
@@ -258,4 +210,3 @@ case "$1" in
     exit 1
     ;;
 esac
-
