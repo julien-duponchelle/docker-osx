@@ -94,16 +94,10 @@ function start_vm() {
       fi
       echo "Start Docker Virtual machine"
       vagrant up
-      vagrant ssh -c "sudo stop docker; sudo start docker"
     fi
 
-
-    # Update Docker on virtual machine if it needs updating
-    if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
-    then
-      vagrant provision
-      vagrant ssh -c "sudo stop docker; sudo start docker"
-    fi
+    vagrant provision
+    vagrant ssh -c "sudo stop docker; sudo start docker"
 }
 
 ############
@@ -134,12 +128,8 @@ then
   mkdir "$VAGRANT_CWD"
 fi
 
-# Will want to update when docker version is bumped
-if [[ $INSTALLED_DOCKER_VERSION != $DOCKER_VERSION ]]
-then
-  # --force-confdef to not ask about overwriting /etc/default/docker
-  INSTALL_UPDATE_DOCKER="apt-get update; apt-get install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' lxc-docker-$DOCKER_VERSION"
-fi
+# --force-confdef to not ask about overwriting /etc/default/docker
+INSTALL_UPDATE_DOCKER="apt-get update; apt-get install -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' lxc-docker-$DOCKER_VERSION"
 
 
 cat > "$VAGRANT_CWD/Vagrantfile" <<EOL
