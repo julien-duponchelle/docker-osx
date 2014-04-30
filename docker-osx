@@ -93,7 +93,7 @@ function start_vm() {
         exit 0
       fi
       echo "Start Docker Virtual machine"
-      vagrant up
+      vagrant up --no-provision
     fi
 
     vagrant provision
