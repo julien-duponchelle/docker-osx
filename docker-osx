@@ -93,11 +93,9 @@ function start_vm() {
         exit 0
       fi
       echo "Start Docker Virtual machine"
-      vagrant up --no-provision
+      vagrant up --provision
+      vagrant ssh -c "sudo stop docker; sudo start docker"
     fi
-
-    vagrant provision
-    vagrant ssh -c "sudo stop docker; sudo start docker"
 }
 
 ############
