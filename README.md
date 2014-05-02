@@ -6,6 +6,8 @@ docker-osx
 
 This an unofficial docker helper made to simplify docker usage on OSX.
 
+You can also read the official OSX documentation on Docker website: http://docs.docker.io/installation/mac/
+
 # What is docker-osx
 
 Docker on OS X in three steps:
