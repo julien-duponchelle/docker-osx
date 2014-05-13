@@ -27,18 +27,24 @@ DOCKER_DOMAIN="localdocker"
 DOCKER_PORT="4243"
 
 DOCKER_VERSION="0.11.1"
-DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-0.11.1.tgz"
-VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box"
 
 DOCKER_BIN="/usr/local/bin/docker"
 
 DOCKER_DEFAULTS_FILE="$VAGRANT_CWD/defaults"
 
-if [ -f "$DOCKER_DEFAULTS_FILE" ];
+if [ -f "$DOCKER_DEFAULTS_FILE" ]
 then
     . "$DOCKER_DEFAULTS_FILE"
 fi
 
+if [ -z "$DOCKER_CLIENT_URL" ]
+then
+    DOCKER_CLIENT_URL="http://get.docker.io/builds/Darwin/x86_64/docker-${DOCKER_VERSION}.tgz"
+fi
+if [ -z "$VAGRANT_BOX_URL" ]
+then
+    VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box"
+fi
 export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
 
 ##########

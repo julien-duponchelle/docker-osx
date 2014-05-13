@@ -104,13 +104,13 @@ Default: `0.7.6`
 
 The URL used to download the docker client.
 
-Default: <http://get.docker.io/builds/Darwin/x86_64/docker-0.7.6.tgz>
+Default: <http://get.docker.io/builds/Darwin/x86_64/docker-${DOCKER_VERSION}.tgz>
 
 ### VAGRANT_BOX_URL
 
 The URL used to download the vagrant box.
 
-Default: <http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.7.2-virtualbox.box>
+Default: <http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box>
 
 ## Contributors
 
