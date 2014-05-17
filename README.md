@@ -106,16 +106,23 @@ The URL used to download the docker client.
 
 Default: <http://get.docker.io/builds/Darwin/x86_64/docker-${DOCKER_VERSION}.tgz>
 
+### VAGRANT_BOX
+
+The name of the vagrant box to use.
+
+Default: `docker-0.8.0`
+
 ### VAGRANT_BOX_URL
 
 The URL used to download the vagrant box.
 
-Default: <http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box>
+Default: <http://static.orchardup.com/binaries/vagrant/vagrant-${VAGRANT_BOX}-virtualbox.box>
 
 ## Contributors
 
 * [Julien Duponchelle](https://github.com/noplay/) – Original author
 * [Ben Firshman](https://github.com/bfirsh) – Faster and simpler installation with Vagrant image and pre-built binary
+* [Michael Merickel](https://github.com/mmerickel) - Support for defaults.
 
 
 ## Alternatives
