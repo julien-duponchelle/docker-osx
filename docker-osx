@@ -147,7 +147,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "private_network", :ip => "$DOCKER_IP"
   config.vm.provision :shell, :inline => "$INSTALL_UPDATE_DOCKER"
   config.vm.provision :shell, :inline => "echo 'export DOCKER_OPTS=\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:$DOCKER_PORT\"' >> /etc/default/docker"
-  config.vm.synced_folder "$(echo ~)", "$(echo ~)", :create => true, mount_options: ["dmode=777,fmode=776"]
+  config.vm.synced_folder "$(echo ~)", "$(echo ~)", :nfs => true, :create => true
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ['modifyvm', :id, '--memory', ENV['VM_MEMORY'] || 1024]
