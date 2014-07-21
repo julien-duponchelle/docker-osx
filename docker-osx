@@ -26,7 +26,7 @@ DOCKER_IP="172.16.42.43"
 DOCKER_DOMAIN="localdocker"
 DOCKER_PORT="4243"
 
-DOCKER_VERSION="1.1.0"
+DOCKER_VERSION="1.1.1"
 
 DOCKER_BIN="/usr/local/bin/docker"
 
