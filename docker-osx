@@ -108,9 +108,9 @@ function start_vm() {
 
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
-if [ -f $VAGRANT_CWD/.docker-version ]
+if [ -f "$VAGRANT_CWD/.docker-version" ]
 then
-  INSTALLED_DOCKER_VERSION=`cat $VAGRANT_CWD/.docker-version`
+  INSTALLED_DOCKER_VERSION=`cat "$VAGRANT_CWD/.docker-version"`
 fi
 
 # Check that dependencies are installed
