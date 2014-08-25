@@ -83,7 +83,7 @@ function help() {
   echo "  destroy   Destroy local docker virtual machine"
   echo "  clear     Remove all docker images and (running) containers"
   echo "  vagrant   Issue subcommands directly to the vagrant CLI"
-  echo "  ssh       Open SSH console on vagrant box"  
+  echo "  ssh       Open SSH console on vagrant box"
   echo "  env       Outputs environment variables for Docker to connect remotely"
   echo "  shell     Open a shell with Docker VM started and environment set"
   echo ""
@@ -196,7 +196,7 @@ case "$1" in
     #echo "(Alternatively, pass -H=$DOCKER_HOST on the command line.)"
     echo
     echo "Then, just use the docker command from OS X directly."
-    echo 
+    echo
     exit 0
     ;;
   destroy)
