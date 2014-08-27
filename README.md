@@ -98,7 +98,7 @@ Default: `4243`
 
 The version of docker that will be installed when provisioning the vagrant vm.
 
-Default: `1.1.1`
+Default: `1.2.0`
 
 ### DOCKER_CLIENT_URL
 
