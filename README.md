@@ -1,7 +1,6 @@
 docker-osx
 ==========
 
-
 # WARNING
 
 This an unofficial docker helper made to simplify docker usage on OSX.
@@ -15,6 +14,12 @@ Docker on OS X in three steps:
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads.html).
 
 2. Put the `docker-osx` script somewhere on your path:
+
+with [bpkg](https://github.com/bpkg/bpkg):
+
+      bpkg install noplay/docker-osx
+
+or curl:
 
         curl https://raw.githubusercontent.com/noplay/docker-osx/HEAD/docker-osx > /usr/local/bin/docker-osx
         chmod +x /usr/local/bin/docker-osx
