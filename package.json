@@ -1,0 +1,8 @@
+{
+  "name": "docker-osx",
+  "version": "1.2.0",
+  "description": "Fast and easy installation of Docker on OS X",
+  "global": "true",
+  "install": "chmod +x docker-osx && install docker-osx ${PREFIX:-/usr/local}/bin"
+}
+
