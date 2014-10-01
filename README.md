@@ -15,11 +15,11 @@ Docker on OS X in three steps:
 
 2. Put the `docker-osx` script somewhere on your path:
 
-with [bpkg](https://github.com/bpkg/bpkg):
+ with [bpkg](https://github.com/bpkg/bpkg):
 
       bpkg install noplay/docker-osx
 
-or curl:
+ or curl:
 
         curl https://raw.githubusercontent.com/noplay/docker-osx/HEAD/docker-osx > /usr/local/bin/docker-osx
         chmod +x /usr/local/bin/docker-osx
