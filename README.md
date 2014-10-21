@@ -3,9 +3,9 @@ docker-osx
 
 # WARNING
 
-This an unofficial docker helper made to simplify docker usage on OSX.
+This project was started before official docker support on Mac OS X. Before using it, take a look the offical way from Docker team: http://docs.docker.io/installation/mac/. We keep this project live until boot2docker fully replace this project (it's almost done)
 
-This project was started before official docker support on Mac OS X. Before using it, take a look the offical way from Docker team: http://docs.docker.io/installation/mac/.
+# If you are a new docker user don't use this project!
 
 # What is docker-osx
 
