@@ -115,7 +115,7 @@ Default: <http://get.docker.io/builds/Darwin/x86_64/docker-${DOCKER_VERSION}.tgz
 
 The URL used to download the vagrant box.
 
-Default: <http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box>
+Default: <https://bfirsh.s3.amazonaws.com/docker/vagrant/vagrant-docker-0.8.0-virtualbox.box>
 
 ## Contributors
 

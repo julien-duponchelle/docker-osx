@@ -43,7 +43,7 @@ then
 fi
 if [ -z "$VAGRANT_BOX_URL" ]
 then
-    VAGRANT_BOX_URL="http://static.orchardup.com/binaries/vagrant/vagrant-docker-0.8.0-virtualbox.box"
+    VAGRANT_BOX_URL="https://bfirsh.s3.amazonaws.com/docker/vagrant/vagrant-docker-0.8.0-virtualbox.box"
 fi
 export DOCKER_HOST="tcp://$DOCKER_IP:$DOCKER_PORT"
 
