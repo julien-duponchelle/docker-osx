@@ -1,11 +1,22 @@
 docker-osx
 ==========
 
-# WARNING
+# WARNING THIS PROJECT IS DEPRECATED
 
-This project was started before official docker support on Mac OS X. Before using it, take a look the offical way from Docker team: http://docs.docker.io/installation/mac/. We keep this project live until boot2docker fully replace this project (it's almost done)
+This project was started before official docker support on Mac OS X. You need to use now the offical way from Docker team: https://docs.docker.com/docker-for-mac/. 
 
-# If you are a new docker user don't use this project!
+It's better, faster, stronger.
+
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
+# DEPRECATED 
 
 # What is docker-osx
 
@@ -122,10 +133,6 @@ Default: <https://bfirsh.s3.amazonaws.com/docker/vagrant/vagrant-docker-0.8.0-vi
 * [Julien Duponchelle](https://github.com/noplay/) – Original author
 * [Ben Firshman](https://github.com/bfirsh) – Faster and simpler installation with Vagrant image and pre-built binary
 
-
-## Alternatives
-
-boot2docker provide an init script with most of docker-osx features and a dynamic team: https://github.com/steeve/boot2docker
 
 ## Licence
 
