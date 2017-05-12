@@ -35,6 +35,29 @@ Docker on OS X in three steps:
         curl https://raw.githubusercontent.com/noplay/docker-osx/HEAD/docker-osx > /usr/local/bin/docker-osx
         chmod +x /usr/local/bin/docker-osx
 
+or brew:
+        brew create curl https://raw.githubusercontent.com/noplay/docker-osx/HEAD/docker-osx --set-name docker-osx
+
+```ruby
+require "formula"
+
+class DockerOsx < Formula
+  homepage "https://github.com/noplay/docker-osx.git"
+  url "https://raw.githubusercontent.com/noplay/docker-osx/HEAD/docker-osx"
+
+  depends_on "docker"
+
+  def install
+    bin.install "docker-osx"
+  end
+
+  test do
+    system "docker-osx"
+  end
+end
+```
+
+        brew install docker-osx               
 3. Run:
 
         docker-osx shell

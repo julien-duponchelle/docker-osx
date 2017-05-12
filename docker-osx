@@ -108,9 +108,9 @@ function start_vm() {
 
 # Determine currently installed version of Docker
 INSTALLED_DOCKER_VERSION=""
-if [ -f "$VAGRANT_CWD/.docker-version" ]
+if [ -f "$DOCKER_BIN" ]
 then
-  INSTALLED_DOCKER_VERSION=`cat "$VAGRANT_CWD/.docker-version"`
+  INSTALLED_DOCKER_VERSION=`$DOCKER_BIN -v | grep -oE "[0-9]+\.[0-9]+\.[0-9]"`
 fi
 
 # Check that dependencies are installed
@@ -176,7 +176,7 @@ fi
 
 
 # Set current installed Docker version
-echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
+#echo $DOCKER_VERSION > $VAGRANT_CWD/.docker-version
 
 case "$1" in
   up|start)
